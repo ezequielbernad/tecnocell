@@ -31,7 +31,11 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run build:artifact
+      # `enablement: true` activa GitHub Pages en el repositorio desde el propio
+      # workflow, sin tener que configurarlo a mano en Settings → Pages.
       - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist-artifact
