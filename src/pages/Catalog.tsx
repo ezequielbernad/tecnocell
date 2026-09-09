@@ -9,6 +9,7 @@ import { site } from '../config/site';
 import { useSeo } from '../hooks/useSeo';
 import { ProductCard } from '../components/ProductCard';
 import { ConsultaButton } from '../components/WhatsApp';
+import { SearchField } from '../components/Header';
 
 type Scope = 'todo' | 'smartphones' | 'accesorios';
 
@@ -208,25 +209,17 @@ export function Catalog({ scope }: { scope: Scope }) {
   return (
     <div className="catalog">
       <header className="catalog__head">
-        <p className="eyebrow mono">{config.eyebrow}</p>
+        <p className="eyebrow">{config.eyebrow}</p>
         <h1 className="catalog__title">{config.title}</h1>
         <p className="catalog__lead">{config.lead}</p>
       </header>
 
       <div className="catalog__toolbar">
-        <div className="field field--search">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-            <circle cx="11" cy="11" r="7" />
-            <path d="m20 20-3.5-3.5" strokeLinecap="round" />
-          </svg>
-          <input
-            type="search"
-            value={filters.q}
-            placeholder="Buscar por marca o modelo"
-            aria-label="Buscar por marca o modelo"
-            onChange={(e) => update({ q: e.target.value })}
-          />
-        </div>
+        <SearchField
+          id="buscador-catalogo"
+          value={filters.q}
+          onChange={(next) => update({ q: next })}
+        />
 
         <div className="catalog__toolbar-right">
           <button
@@ -238,7 +231,7 @@ export function Catalog({ scope }: { scope: Scope }) {
             Filtros{activeCount > 0 ? ` (${activeCount})` : ''}
           </button>
 
-          <label className="field field--select">
+          <label className="field">
             <span className="visually-hidden">Ordenar por</span>
             <select value={filters.sort} onChange={(e) => update({ orden: e.target.value })}>
               {sortOptions.map((o) => (
@@ -257,7 +250,7 @@ export function Catalog({ scope }: { scope: Scope }) {
         </aside>
 
         <div className="catalog__results">
-          <p className="catalog__count mono" role="status">
+          <p className="catalog__count" role="status">
             {plural(results.length, 'resultado', 'resultados')}
             {activeCount > 0 && (
               <>
@@ -328,7 +321,7 @@ export function Catalog({ scope }: { scope: Scope }) {
 function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <fieldset className="filter-group">
-      <legend className="filter-group__title mono">{title}</legend>
+      <legend className="filter-group__title">{title}</legend>
       <div className="filter-group__body">{children}</div>
     </fieldset>
   );

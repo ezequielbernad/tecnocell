@@ -30,8 +30,10 @@ export interface Variant {
   storage?: string;
   /** Nombre comercial del color. */
   color: string;
-  /** Color aproximado del equipo, para la ilustración del producto. */
+  /** Color aproximado, sólo para el círculo del selector de color. */
   hex: string;
+  /** Foto de este color, ej. '/productos/apple-iphone-15-azul.jpg'. */
+  photo?: string;
   /** Precio en la moneda de site.catalog.currency. null = a consultar. */
   price: number | null;
   stock: StockState;
@@ -56,6 +58,14 @@ export interface Product {
   specs: Spec[];
   variants: Variant[];
   featured?: boolean;
+  /**
+   * Foto principal del producto: archivo dentro de public/productos/,
+   * ej. '/productos/apple-iphone-15.jpg'. Ver public/productos/README.md.
+   * Sin foto cargada, la web muestra un marcador neutro.
+   */
+  photo?: string;
+  /** Fotos adicionales para la galería de la ficha. */
+  photos?: string[];
 }
 
 export const categories: { id: CategoryId; label: string; blurb: string }[] = [
@@ -309,6 +319,7 @@ export const products: Product[] = [
     model: 'Edge 50 Fusion',
     category: 'smartphones',
     device: 'phone',
+    featured: true,
     tagline: 'Pantalla curva de 144 Hz y acabado textil.',
     description:
       'El más lindo de tener en la mano dentro de la gama media: acabado de tela vegana y pantalla curva muy fluida. Rinde bien en fotos con buena luz y la carga de 68 W es rápida de verdad.',

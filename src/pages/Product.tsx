@@ -5,8 +5,7 @@ import { categories } from '../data/catalog';
 import { getProduct, relatedProducts } from '../lib/catalog';
 import { formatPrice, stockLabels } from '../lib/format';
 import { useSeo } from '../hooks/useSeo';
-import { ProductImage, viewsFor, viewLabels } from '../components/ProductImage';
-import type { View } from '../components/ProductImage';
+import { ProductPhoto, photoOf } from '../components/ProductPhoto';
 import { ConsultaButton } from '../components/WhatsApp';
 import { ProductCard } from '../components/ProductCard';
 import { NotFound } from './NotFound';
@@ -39,7 +38,7 @@ function ProductDetail({ slug }: { slug: string }) {
 
   const colors = colorsFor(storage);
   const [color, setColor] = useState<string>(colors[0]?.color ?? product.variants[0].color);
-  const [view, setView] = useState<View>('frente');
+  const [photoIndex, setPhotoIndex] = useState(0);
 
   const variant =
     product.variants.find((v) => v.color === color && (!storage || v.storage === storage)) ??
@@ -47,9 +46,12 @@ function ProductDetail({ slug }: { slug: string }) {
     product.variants[0];
 
   const stock = stockLabels[variant.stock];
-  const views = viewsFor(product.device);
   const category = categories.find((c) => c.id === product.category)!;
   const related = relatedProducts(product);
+
+  /* La foto del color elegido manda; si no hay, se usan las del producto. */
+  const gallery = variant.photo ? [variant.photo] : (product.photos ?? []);
+  const currentPhoto = gallery[photoIndex] ?? photoOf(product, variant);
 
   useSeo({
     title: `${product.brand} ${product.model}`,
@@ -60,6 +62,7 @@ function ProductDetail({ slug }: { slug: string }) {
     setStorage(next);
     const available = colorsFor(next);
     if (!available.some((v) => v.color === color)) setColor(available[0].color);
+    setPhotoIndex(0);
   }
 
   return (
@@ -67,7 +70,9 @@ function ProductDetail({ slug }: { slug: string }) {
       <nav className="breadcrumb" aria-label="Migas de pan">
         <Link to="/">Inicio</Link>
         <span aria-hidden="true">/</span>
-        <Link to={product.category === 'smartphones' ? '/smartphones' : `/catalogo?categoria=${product.category}`}>
+        <Link
+          to={product.category === 'smartphones' ? '/smartphones' : `/catalogo?categoria=${product.category}`}
+        >
           {category.label}
         </Link>
         <span aria-hidden="true">/</span>
@@ -75,40 +80,44 @@ function ProductDetail({ slug }: { slug: string }) {
       </nav>
 
       <div className="product__top">
-        {/* -------------------------------------------------------- Galería */}
+        {/* --------------------------------------------------------- Fotos */}
         <div className="gallery">
-          <div className="gallery__stage">
-            <ProductImage
-              product={product}
-              color={variant.hex}
-              view={view}
-              className="gallery__image"
-              alt={`${product.brand} ${product.model}, ${variant.color}, vista ${viewLabels[view].toLowerCase()}`}
-            />
-          </div>
-          <div className="gallery__thumbs" role="tablist" aria-label="Vistas del producto">
-            {views.map((v) => (
-              <button
-                key={v}
-                type="button"
-                role="tab"
-                aria-selected={view === v}
-                className={`gallery__thumb ${view === v ? 'is-active' : ''}`}
-                onClick={() => setView(v)}
-              >
-                <ProductImage product={product} color={variant.hex} view={v} alt="" />
-                <span className="visually-hidden">{viewLabels[v]}</span>
-              </button>
-            ))}
-          </div>
-          <p className="gallery__note mono">
-            Ilustración del equipo según el color elegido. No es una fotografía del producto.
-          </p>
+          <ProductPhoto
+            product={product}
+            variant={variant}
+            src={currentPhoto}
+            priority
+            alt={`${product.brand} ${product.model}, color ${variant.color}`}
+          />
+
+          {gallery.length > 1 && (
+            <div className="gallery__thumbs">
+              {gallery.map((src, i) => (
+                <button
+                  key={src}
+                  type="button"
+                  className={`gallery__thumb ${photoIndex === i ? 'is-active' : ''}`}
+                  onClick={() => setPhotoIndex(i)}
+                  aria-label={`Ver foto ${i + 1} de ${gallery.length}`}
+                  aria-pressed={photoIndex === i}
+                >
+                  <ProductPhoto product={product} src={src} alt="" />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {!currentPhoto && (
+            <p className="gallery__note">
+              Todavía no cargamos las fotos de este equipo. Si querés verlo antes de decidir,
+              pedinos fotos reales por WhatsApp.
+            </p>
+          )}
         </div>
 
-        {/* ---------------------------------------------------------- Datos */}
+        {/* --------------------------------------------------------- Datos */}
         <div className="product__info">
-          <p className="eyebrow mono">{product.brand}</p>
+          <p className="eyebrow">{product.brand}</p>
           <h1 className="product__title">{product.model}</h1>
           <p className="product__tagline">{product.tagline}</p>
 
@@ -132,7 +141,7 @@ function ProductDetail({ slug }: { slug: string }) {
 
           {storages.length > 0 && (
             <div className="selector">
-              <p className="selector__label mono">
+              <p className="selector__label">
                 Capacidad<span className="selector__value">{storage}</span>
               </p>
               <div className="selector__options">
@@ -152,21 +161,21 @@ function ProductDetail({ slug }: { slug: string }) {
           )}
 
           <div className="selector">
-            <p className="selector__label mono">
-              Color<span className="selector__value">{variant.color}</span>
-            </p>
+            <p className="selector__label">Color</p>
             <div className="selector__options">
               {colors.map((v) => (
                 <button
                   key={v.color}
                   type="button"
                   className={`swatch ${color === v.color ? 'is-active' : ''}`}
-                  onClick={() => setColor(v.color)}
+                  onClick={() => {
+                    setColor(v.color);
+                    setPhotoIndex(0);
+                  }}
                   aria-pressed={color === v.color}
-                  title={v.color}
                 >
                   <span className="swatch__dot" style={{ background: v.hex }} aria-hidden="true" />
-                  <span className="visually-hidden">{v.color}</span>
+                  {v.color}
                 </button>
               ))}
             </div>
@@ -194,23 +203,21 @@ function ProductDetail({ slug }: { slug: string }) {
       </div>
 
       {/* ------------------------------------------------- Especificaciones */}
-      <section className="section section--tight" aria-labelledby="specs-title">
-        <h2 id="specs-title" className="section__title section__title--sm">
-          Especificaciones
-        </h2>
+      <section className="section section--tight">
+        <h2 className="section__title section__title--sm">Especificaciones</h2>
         <dl className="specs">
           {product.specs.map((s) => (
             <div key={s.label} className="specs__row">
-              <dt className="specs__key mono">{s.label}</dt>
+              <dt className="specs__key">{s.label}</dt>
               <dd className="specs__value">{s.value}</dd>
             </div>
           ))}
           <div className="specs__row">
-            <dt className="specs__key mono">Capacidades</dt>
-            <dd className="specs__value">{storages.length ? storages.join(' · ') : 'Única'}</dd>
+            <dt className="specs__key">Capacidades</dt>
+            <dd className="specs__value mono">{storages.length ? storages.join(' · ') : 'Única'}</dd>
           </div>
           <div className="specs__row">
-            <dt className="specs__key mono">Colores</dt>
+            <dt className="specs__key">Colores</dt>
             <dd className="specs__value">
               {Array.from(new Set(product.variants.map((v) => v.color))).join(' · ')}
             </dd>
@@ -220,14 +227,9 @@ function ProductDetail({ slug }: { slug: string }) {
 
       {/* ------------------------------------------------------ Relacionados */}
       {related.length > 0 && (
-        <section className="section" aria-labelledby="related-title">
+        <section className="section section--tight section--line">
           <div className="section__head">
-            <div>
-              <p className="eyebrow mono">También te puede servir</p>
-              <h2 id="related-title" className="section__title">
-                Productos relacionados
-              </h2>
-            </div>
+            <h2 className="section__title">Productos relacionados</h2>
           </div>
           <div className="grid-products">
             {related.map((p) => (

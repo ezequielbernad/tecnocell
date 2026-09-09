@@ -109,15 +109,17 @@ sin desbordamiento horizontal y soporte de `prefers-reduced-motion`.
 SEO: título y descripción propios por página, Open Graph y `lang="es"`. La URL
 canónica y `og:url` se emiten sólo cuando se complete `site.url`.
 
-### Sobre las imágenes
+### Fotos de producto
 
-El catálogo de demostración **no usa fotos de producto**: cada equipo se dibuja
-como SVG a partir de su tipo y del color de la variante elegida. Por eso el
-color seleccionado cambia la ilustración, no pesa nada y no hay imágenes rotas.
-La ficha lo aclara con la leyenda "Ilustración del equipo según el color".
+Las fotos reales van en `public/productos/` y se enlazan desde el catálogo con
+el campo `photo` (y `photo` por variante, si hay una foto por color). Las
+instrucciones completas, con nombres de archivo y tamaños recomendados, están
+en `public/productos/README.md`.
 
-Para pasar a fotos reales, reemplazar `ProductImage` por un `<img>` con
-`loading="lazy"`, `width`/`height` y la misma relación de aspecto **4:5**.
+Mientras un producto no tenga foto cargada, la web muestra un **marcador neutro**
+con un contorno esquemático según la categoría. Es deliberado: no se representa
+un modelo concreto con una imagen inventada, porque alteraría cómo es el equipo
+en realidad. La foto de la portada se configura en `site.home.heroPhoto`.
 
 ---
 
@@ -127,20 +129,22 @@ Nada de esto está inventado en el código: son los campos que hay que completar
 
 1. **Número de WhatsApp** (`site.whatsapp.number`) — bloqueante: es la conversión
    principal.
-2. **Catálogo real**: productos, precios, capacidades, colores y stock; después
+2. **Fotos de los productos** en `public/productos/` y la foto de portada en
+   `site.home.heroPhoto`. Es lo que más cambia la percepción de la tienda.
+3. **Catálogo real**: productos, precios, capacidades, colores y stock; después
    `catalog.source = 'real'`.
-3. **Dominio** (`site.url`) — necesario para las URLs canónicas, Open Graph y
+4. **Dominio** (`site.url`) — necesario para las URLs canónicas, Open Graph y
    para poder agregar datos estructurados.
-4. **Contacto**: dirección, localidad, enlace de Google Maps, teléfono y email
+5. **Contacto**: dirección, localidad, enlace de Google Maps, teléfono y email
    (`site.contact`). Hoy la web oculta lo que no está cargado.
 5. **Horarios de atención** (`site.openingHours`).
-6. **Redes sociales** (`site.social`).
-7. **Respuestas reales de las preguntas frecuentes** (`site.faq`): medios de
+7. **Redes sociales** (`site.social`).
+8. **Respuestas reales de las preguntas frecuentes** (`site.faq`): medios de
    pago, financiación, envíos y condiciones de garantía. Las actuales son
    neutras a propósito, para no afirmar políticas que no fueron confirmadas.
-8. **Logo definitivo**: hoy hay una solución tipográfica provisional en
+9. **Logo definitivo**: hoy hay una solución tipográfica provisional en
    `Logo` (`src/components/Header.tsx`) y `public/favicon.svg`.
-9. **Imagen de Open Graph** para compartir en redes.
+10. **Imagen de Open Graph** para compartir en redes.
 
 Cosas deliberadamente **no** incluidas, por no tener respaldo: testimonios,
 cifras de ventas, sellos de confianza, promociones, cuotas y plazos de envío.

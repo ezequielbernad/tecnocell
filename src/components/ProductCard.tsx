@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { site, isDemoCatalog } from '../config/site';
 import type { Product } from '../data/catalog';
 import { formatPrice, minPrice, stockLabels } from '../lib/format';
-import { ProductImage } from './ProductImage';
+import { ProductPhoto } from './ProductPhoto';
 
 /** Capacidades distintas del producto, en orden. */
 function storages(product: Product): string[] {
@@ -18,7 +18,7 @@ function bestStock(product: Product) {
   return stockLabels[best.stock];
 }
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({ product, hideTag }: { product: Product; hideTag?: boolean }) {
   const price = minPrice(product);
   const caps = storages(product);
   const stock = bestStock(product);
@@ -27,20 +27,14 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="card">
       <Link className="card__link" to={`/producto/${product.slug}`}>
-        <div className="card__plate">
-          <ProductImage
-            product={product}
-            color={product.variants[0].hex}
-            className="card__image"
-            alt={`${product.brand} ${product.model}`}
-          />
-          {product.featured && <span className="tag tag--accent">Destacado</span>}
+        <div className="card__media">
+          {product.featured && !hideTag && <span className="tag">Destacado</span>}
+          <ProductPhoto product={product} alt={`${product.brand} ${product.model}`} />
         </div>
 
         <div className="card__body">
-          <p className="card__brand mono">{product.brand}</p>
+          <p className="card__brand">{product.brand}</p>
           <h3 className="card__title">{product.model}</h3>
-          <p className="card__tagline">{product.tagline}</p>
 
           {caps.length > 0 && (
             <ul className="chip-row" aria-label="Capacidades disponibles">
@@ -60,7 +54,7 @@ export function ProductCard({ product }: { product: Product }) {
                     {multiPrice && <span className="card__price-from">desde </span>}
                     {formatPrice(price)}
                   </span>
-                  {isDemoCatalog && <span className="card__price-note mono">precio de referencia</span>}
+                  {isDemoCatalog && <span className="card__price-note">precio de referencia</span>}
                 </>
               ) : (
                 <span className="card__price-value card__price-value--ask">Consultar precio</span>

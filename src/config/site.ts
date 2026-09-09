@@ -85,6 +85,16 @@ export const site = {
     showPrices: true,
   },
 
+  /* --- Portada ------------------------------------------------------------ */
+  home: {
+    /**
+     * Foto del banner principal: archivo dentro de public/productos/,
+     * ej. '/productos/portada.jpg'. Conviene una foto de producto propia o del
+     * fabricante, apaisada y con fondo claro. Sin foto, se muestra un marcador.
+     */
+    heroPhoto: null as string | null,
+  },
+
   /* --- Preguntas frecuentes ---------------------------------------------- *
    * Respuestas neutras y verificables. Reemplazar por las políticas reales
    * del negocio antes de publicar (garantía, pagos, envíos).                */
