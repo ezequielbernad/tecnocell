@@ -2,7 +2,11 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
 import App from './App';
+import { applyTheme, readTheme } from './lib/theme';
 import './styles/global.css';
+
+// Se aplica antes de dibujar para que no se vea un destello del otro tema.
+applyTheme(readTheme());
 
 /**
  * En el build de un solo archivo (artifact / hosting estático sin reescritura

@@ -5,6 +5,8 @@ import { quickSearch } from '../lib/catalog';
 import { minPrice, formatPrice } from '../lib/format';
 import { ConsultaButton } from './WhatsApp';
 import { ProductPhoto } from './ProductPhoto';
+import { applyTheme, readTheme, saveTheme } from '../lib/theme';
+import type { Theme } from '../lib/theme';
 
 const navItems = [
   { to: '/', label: 'Inicio', end: true },
@@ -30,7 +32,24 @@ export function Logo({ className = '' }: { className?: string }) {
   );
 }
 
-export function SearchIcon({ size = 16 }: { size?: number }) {
+function MoonIcon() {
+  return (
+    <svg className="theme-toggle__moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+      <path d="M20 14.2A8.2 8.2 0 0 1 9.8 4a8.4 8.4 0 1 0 10.2 10.2Z" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function SunIcon() {
+  return (
+    <svg className="theme-toggle__sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+      <circle cx="12" cy="12" r="4.2" />
+      <path d="M12 2.6v2.2M12 19.2v2.2M4.2 12H2M22 12h-2.2M6.3 6.3 4.8 4.8M19.2 19.2l-1.5-1.5M17.7 6.3l1.5-1.5M4.8 19.2l1.5-1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function SearchIcon({ size = 16 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
       <circle cx="11" cy="11" r="7" />
@@ -41,6 +60,7 @@ export function SearchIcon({ size = 16 }: { size?: number }) {
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [theme, setTheme] = useState<Theme>(readTheme);
   const [searchRow, setSearchRow] = useState(false);
   const menuBtn = useRef<HTMLButtonElement>(null);
 
@@ -55,6 +75,13 @@ export function Header() {
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
   }, [menuOpen]);
+
+  function toggleTheme() {
+    const next: Theme = theme === 'claro' ? 'oscuro' : 'claro';
+    applyTheme(next);
+    saveTheme(next);
+    setTheme(next);
+  }
 
   return (
     <header className="header">
@@ -99,6 +126,20 @@ export function Header() {
             >
               <span className="visually-hidden">Buscar equipos</span>
               <SearchIcon size={18} />
+            </button>
+
+            <button
+              type="button"
+              className="icon-btn theme-toggle"
+              onClick={toggleTheme}
+              aria-pressed={theme === 'oscuro'}
+              title={theme === 'claro' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
+            >
+              <span className="visually-hidden">
+                {theme === 'claro' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
+              </span>
+              <MoonIcon />
+              <SunIcon />
             </button>
 
             <ConsultaButton kind="general" className="header__cta">

@@ -17,6 +17,12 @@
   --accent: #2563eb;
   --accent-dark: #1d4ed8;
   --accent-soft: #eef3fe;
+  --accent-fill: #2563eb;
+  --accent-fill-ink: #ffffff;
+  --placeholder: #aab2bb;
+  --overlay: rgba(32, 37, 43, 0.4);
+  --whatsapp-hover: #15743e;
+  --whatsapp-ink: #ffffff;
   --ok: #157f4a;
   --warn: #9a6300;
   --off: #767f89;
@@ -152,8 +158,8 @@ select {
   left: -9999px;
   top: 10px;
   z-index: 90;
-  background: var(--accent);
-  color: #fff;
+  background: var(--accent-fill);
+  color: var(--accent-fill-ink);
   padding: 10px 16px;
   border-radius: var(--radius-sm);
 }
@@ -185,8 +191,8 @@ select {
 }
 
 .btn--primary {
-  background: var(--accent);
-  color: #fff;
+  background: var(--accent-fill);
+  color: var(--accent-fill-ink);
 }
 
 .btn--primary:hover {
@@ -591,7 +597,7 @@ select {
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  color: #aab2bb;
+  color: var(--placeholder);
   padding: 12%;
 }
 
@@ -769,8 +775,8 @@ select {
   text-transform: uppercase;
   padding: 3px 7px;
   border-radius: 3px;
-  background: var(--accent);
-  color: #fff;
+  background: var(--accent-fill);
+  color: var(--accent-fill-ink);
 }
 
 .card__body {
@@ -1243,8 +1249,8 @@ select {
 }
 
 .check input:checked {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--accent-fill);
+  border-color: var(--accent-fill);
 }
 
 .check input:checked::after {
@@ -1329,7 +1335,7 @@ select {
   position: fixed;
   inset: 0;
   z-index: 80;
-  background: rgba(32, 37, 43, 0.4);
+  background: var(--overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1611,7 +1617,7 @@ select {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 1px solid rgba(32, 37, 43, 0.18);
+  border: 1px solid var(--border-strong);
   flex: none;
 }
 
@@ -1843,7 +1849,7 @@ select {
 
 .fab__btn {
   background: var(--whatsapp);
-  color: #fff;
+  color: var(--whatsapp-ink);
   border-radius: 999px;
   width: 52px;
   height: 52px;
@@ -1853,8 +1859,8 @@ select {
 }
 
 .fab__btn:hover {
-  background: #15743e;
-  color: #fff;
+  background: var(--whatsapp-hover);
+  color: var(--whatsapp-ink);
 }
 
 .fab__label {
@@ -2050,4 +2056,70 @@ select {
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* ===========================================================================
+   Modo oscuro
+   ---------------------------------------------------------------------------
+   La identidad de Tecnocell es clara: el modo oscuro es una preferencia que
+   elige la persona con el botón del encabezado y queda guardada en el
+   navegador. `main.tsx` marca <html data-theme="light|dark"> antes de dibujar
+   la página, así que nunca se ve un cambio brusco de color al cargar.
+
+   Para que en cambio siga la preferencia del sistema cuando nadie eligió,
+   ver el comentario de src/lib/theme.ts.
+   =========================================================================== */
+
+:root[data-theme='dark'] {
+  --bg: #14161a;
+  --surface: #1b1e24;
+  --surface-2: #22262e;
+  --border: #2c313a;
+  --border-strong: #3c434f;
+  --ink: #e8ecf2;
+  --ink-2: #b3bac5;
+  --ink-3: #8a93a0;
+
+  --accent: #6ba0ff;
+  --accent-dark: #86b2ff;
+  --accent-soft: rgba(107, 160, 255, 0.15);
+  --accent-fill: #2b66db;
+  --accent-fill-ink: #ffffff;
+
+  --ok: #4fc98c;
+  --warn: #e0b34a;
+  --off: #7c8494;
+  --whatsapp: #25d366;
+  --whatsapp-hover: #3ee07d;
+  --whatsapp-ink: #06210f;
+
+  --placeholder: #5d6675;
+  --overlay: rgba(6, 8, 11, 0.62);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* En oscuro, una foto con fondo blanco encandila: se apoya sobre un marco
+   claro propio para que el producto siga leyéndose sin brillar de más. */
+:root[data-theme='dark'] .photo__img {
+  filter: brightness(0.94);
+}
+
+/* El botón del tema muestra el icono del modo al que se va a cambiar. */
+.theme-toggle__moon,
+:root[data-theme='dark'] .theme-toggle__sun {
+  display: block;
+}
+
+.theme-toggle__sun,
+:root[data-theme='dark'] .theme-toggle__moon {
+  display: none;
+}
+
+.mobile-menu__theme {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
 }
